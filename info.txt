@@ -1,0 +1,3 @@
+Data acquired from:
+
+https://www.kaggle.com/virtualdvid/oregon-wildlife
