@@ -165,13 +165,17 @@ def model_maker(MODEL_NAME, IMG_WIDTH, IMG_HEIGHT, NUM_CLASSES):
     return Model(inputs=input, outputs=predictions)
 
 
+# ### Model variables
+
+NUM_CLASSES = len(df['category'].unique())
 TRAIN_SAMPLES = 500
 VALIDATION_SAMPLES = 500
-NUM_CLASSES = len(df['category'].unique())
+MODEL_NAME = 'vgg16'
+EPOCHS = 10
+
+# ### Run Model
 
 # +
-MODEL_NAME = 'vgg16'
-
 model = model_maker(MODEL_NAME, IMG_WIDTH, IMG_HEIGHT, NUM_CLASSES)
 
 model.compile(loss='categorical_crossentropy',
@@ -181,7 +185,7 @@ model.compile(loss='categorical_crossentropy',
 history = model.fit_generator(
     train_generator,
     steps_per_epoch=math.ceil(float(TRAIN_SAMPLES) / BATCH_SIZE),
-    epochs=10,
+    epochs= EPOCHS,
     validation_data=validation_generator,
     validation_steps=math.ceil(float(VALIDATION_SAMPLES) / BATCH_SIZE))
 # -
@@ -191,7 +195,7 @@ plt.grid(True)
 plt.gca().set_ylim(0, 3.5)
 plt.show()
 
-model.save('models/'+MODEL_NAME+'_model.h5')
+model.save('models/'+MODEL_NAME+'_model_'+EPOCHS+'_epochs'.h5')
 
 # # MODEL PREDICITON
 
