@@ -23,6 +23,7 @@ from tensorflow.keras.applications.mobilenet import MobileNet, preprocess_input
 import math
 import os
 import gc
+import matplotlib.pyplot as plt
 
 # +
 from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
@@ -142,7 +143,7 @@ validation_generator = val_datagen.flow_from_dataframe(dataframe=val_dataframe,
 
 # # DEFINE THE MODEL
 
-def model_maker(MODEL_NAME, IMG_WIDTH, IMG_HEIGHT):
+def model_maker(MODEL_NAME, IMG_WIDTH, IMG_HEIGHT, NUM_CLASSES):
     from keras.applications.vgg16 import VGG16
 #    base_model = MobileNet(include_top=False,
  #                          input_shape=(IMG_WIDTH, IMG_HEIGHT, 3))
@@ -171,7 +172,7 @@ NUM_CLASSES = len(df['category'].unique())
 # +
 MODEL_NAME = 'vgg16'
 
-model = model_maker(MODEL_NAME, IMG_WIDTH, IMG_HEIGHT)
+model = model_maker(MODEL_NAME, IMG_WIDTH, IMG_HEIGHT, NUM_CLASSES)
 
 model.compile(loss='categorical_crossentropy',
               optimizer=tf.keras.optimizers.Adam(0.001),
@@ -197,17 +198,25 @@ model.save('models/'+MODEL_NAME+'_model.h5')
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import numpy as np
+MODEL_NAME = 'vgg16'
 model = load_model('models/'+MODEL_NAME+'_model.h5')
 
+# +
 img_path = 'data/oregon_wildlife/bald_eagle/0a6bf3fa0a0d17aed4.jpg'
 img = image.load_img(img_path, target_size=(224, 224))
+
 img_array = image.img_to_array(img)
 expanded_img_array = np.expand_dims(img_array, axis=0)
 preprocessed_img = expanded_img_array / 255.  # Preprocess the image
 prediction = model.predict(preprocessed_img)
-print(prediction)
-print(validation_generator.class_indices)
+#print(np.argmax(prediction))
+#print(validation_generator.class_indices)
 
+predicted_label = pd.DataFrame(validation_generator.class_indices.items())[0].iloc[np.argmax(prediction)]
 
+plt.figure()
+plt.title("Predicted Label: "+predicted_label+'\n',fontsize=20)
+plt.imshow(img)
+# -
 
 
